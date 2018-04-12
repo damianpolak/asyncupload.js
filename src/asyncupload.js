@@ -4,58 +4,103 @@
   // Buttons id
   const idBtnAddFiles = '_asBtn-AddFiles';
   const idBtnSendFiles = '_asBtn-SendFiles';
+    const idBtnSendFilesWrapper = '_asLi-SendFiles';
   const idBtnRemFile = '_asI-FileItem-Rem-';
 
   // Places id
   const idFrmInputs = '_asFrm-InputFiles';
   const idUlListFiles = '_asUl-ListFiles';
+  const idSpanFileName = '_as-FileItem-Name-';
 
   let elBtnAddFiles = document.getElementById(idBtnAddFiles);
   let elBtnSendFiles = document.getElementById(idBtnSendFiles);
 
-
-
+  // Main container - document ready
   document.addEventListener('DOMContentLoaded', () => {
-    // Click event for add files button, trigger click on hidden input
-    elBtnAddFiles.addEventListener('click', () => {
-      console.log('CLICKED ADD FILES');
-      input.add(idFrmInputs);
 
-
-      const currInput = `${input.pattern.id}${input.value()}`;
-      let element = document.getElementById(currInput);
-      element.click();
-
-      element.addEventListener('change', (e) => {
-        console.log(`change: ${e}`);
-
-
-        let files = e.target.files;
-        for(let i = 0; i <= files.length-1; i++)
-          if(proc.upload.files.add (files[i])) {
-            proc.upload.files.inc();
-
-            let fileCount = proc.upload.files.getCount();
-            list.add(files[i], fileCount, idUlListFiles);
-
-            document.getElementById(`${idBtnRemFile}${fileCount}`).addEventListener('click', (e) => {
-              console.log(`Clicked: ${e.target.id}`);
-
-              // Dopisać do remove click
-            })
-          }
-
-      });
-
+    // Click event add files, triggers input click
+    elBtnAddFiles.addEventListener('click', (e) => {
+      addClick(e);
     });
 
-    // Click event for send files button
-    elBtnSendFiles.addEventListener('click', () => {
-      console.log('CLICKED SEND FILES');
-
+    // Click event send files
+    elBtnSendFiles.addEventListener('click', (e) => {
+      e.preventDefault();
+      progress.show();
+      // Hide Send Button
+      document.getElementById(idBtnSendFilesWrapper).setAttribute('style', 'display: none');
+      sendClick(e);
     });
 
   });
+
+  // Function body for event adding files click
+  let addClick = (e) => {
+    input.add(idFrmInputs);
+
+    const currInput = `${input.pattern.id}${input.value()}`;
+    let element = document.getElementById(currInput);
+    element.click();
+
+    // EVENT CHANGE INPUT FILES
+    element.addEventListener('change', (e) => {
+      inputChange(e);
+    });
+  }
+
+  let inputChange = (e) => {
+    let files = e.target.files;
+    for(let i = 0; i <= files.length-1; i++)
+      if(proc.upload.files.add (files[i])) {
+        proc.upload.files.inc();
+
+        let fileCount = proc.upload.files.getCount();
+        list.add(files[i], fileCount, idUlListFiles);
+
+        document.getElementById(`${idBtnRemFile}${fileCount}`).addEventListener('click', (e) => {
+          console.log(`Clicked: ${e.target.id}`);
+
+          removeClick(e);
+        })
+      }
+  }
+
+  let removeClick = (e) => {
+    let res = e.target.id.split('-');
+    let index = res[res.length-1];
+
+    let elem = document.getElementById(`${idSpanFileName}${index}`);
+    console.log(`value elem: ${elem.innerText}`);
+    if(proc.upload.files.remove(elem.innerText)) {
+      list.remove (e.target.id);
+      console.log(proc.upload.files.list());
+    }
+  }
+
+  let sendClick = (e) => {
+    let ar = input.getAll();
+    console.log(`SEND FILES: ${ar.length}`);
+    let c = input.value();
+    console.log(`SEND INPUTS: ${c}`);
+    let objInputs = [];
+
+    for(let i = 1; i <= c; i++)
+      objInputs.push(document.getElementById(`${inputPattern.id}${i}`));
+
+    proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+
+      var percentComplete = e.loaded / e.total;
+
+      percentComplete = parseInt(percentComplete * 100);
+
+        progress.inc(percentComplete, e.loaded, e.total);
+        console.log(`TARGET: ${e.target}`);
+      if (percentComplete === 100) {
+
+      }
+    });
+
+  }
 })();
 
 const inputPattern = {
@@ -64,13 +109,18 @@ const inputPattern = {
   id: '_asInp-FileItem-'
 };
 
-let listPattern = {
+const listPattern = {
   id: '_asLi-FileItem-',
   class: 'test list-group-item align-middle'
+};
+
+const progressPattern = {
+  wrapperId: '_asLi-ProgressBar',
+  barId: '_asDiv-ProgressBar',
+  infoId: '_asP-ProgressInfo'
 }
 
 let input = (() => {
-
   const pattern = inputPattern;
   let count = 0;
 
@@ -93,6 +143,16 @@ let input = (() => {
     },
     value: () => {
       return count;
+    },
+    getAll: () => {
+      let objArray = [];
+      for(let i = 1; i <= input.value(); i++) {
+        let n = document.getElementById(`${pattern.id}${i}`).files.length;
+        for(let j = 0; j <= n - 1; j++) {
+          objArray.push(document.getElementById(`${pattern.id}${i}`).files[j]);
+        }
+      }
+      return objArray;
     },
     pattern: pattern
 
@@ -131,8 +191,28 @@ let list = (() => {
         elementIBtn.setAttribute('id', `_asI-FileItem-Rem-${index}`);
       elementDivRemoveButton.appendChild(elementIBtn);
 
+    },
+    remove: (id) => {
+      let res = id.split('-');
+      let index = res[res.length-1];
+      document.getElementById(`${listPattern.id}${index}`).setAttribute('style', 'display: none;');
+      console.log(`HIDE ELEMENT: `);
     }
   };
+})();
+
+let progress = (() => {
+  return {
+    show: () => {
+      document.getElementById(progressPattern.wrapperId).setAttribute('style', 'display: block;');
+    },
+    inc: (value, loaded, total) => {
+      document.getElementById(progressPattern.barId).setAttribute('style', `width: ${value}%`);
+      document.getElementById(progressPattern.barId).setAttribute('aria-valuenow', `${value}`);
+      //document.getElementById(progressPattern.infoId).setAttribute(`${value}% | ${loaded}/${total}`);
+      document.getElementById(progressPattern.infoId).innerHTML = `${value}% | ${loaded}/${total}`;
+    }
+  }
 })();
 
 const proc = (() => {
@@ -145,9 +225,9 @@ const proc = (() => {
       console.log(dataInputs);
       let inpCount = dataInputs.length;
       for(let i = 1; i <= inpCount; i++) {
-        let n = dataInputs[i-1].get(0).files.length;
+        let n = dataInputs[i-1].files.length;
         for(let j = 0; j <= n - 1; j++) {
-          let file = dataInputs[i-1].get(0).files[j];
+          let file = dataInputs[i-1].files[j];
           let d = dataForTheServer.getAll('userfile[]');
           if(!d.find(x => x.name === file.name)) {
             if(files.list().find(x => x.name === file.name))
@@ -160,7 +240,39 @@ const proc = (() => {
     }
 
     let send = (ajaxUrl, ajaxData, progress) => {
-      // AJAX CALL
+
+      // CHANGE TO RAW JAVASCRIPT
+
+      $.ajax({
+          type: 'POST',
+          url: ajaxUrl,
+          cache: false,
+          contentType: false,
+          processData: false,
+          data : ajaxData,
+
+          xhr: () => {
+            let xhr = new window.XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', e => {
+              if (e.lengthComputable) {
+                progress(e);
+              }
+            }, false);
+
+            return xhr;
+          },
+          success: result => {
+              console.log('success');
+              $('#response').html(result);
+          },
+          error: err => {
+              console.log(err);
+          }
+      })
+
+
+
     }
 
     let files = (() => {
@@ -183,9 +295,7 @@ const proc = (() => {
       }
 
       let remove = (item) => {
-        //console.log(`proc-item-remove: ${item}`)
         let index = approved.findIndex(x => x.name == item);
-        // index is positon, index < 0 = not exists
         if(!(index < 0)) {
           approved.splice(index, 1);
           return true
