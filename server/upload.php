@@ -1,4 +1,17 @@
 <?php
+
+/*
+ * asyncupload.js
+ * https://github.com/damianpolak/asyncupload.js
+ *
+ * Copyright 2017, Damian Polak
+ * lib used: Bootstrap 4.0.0
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ *
+ */
+
 $root = $_SERVER['DOCUMENT_ROOT'].'/asyncupload.js/';
 if(isset($_FILES)) {
 
@@ -12,14 +25,11 @@ if(isset($_FILES)) {
 
   foreach ($_FILES['userfile']['error'] as $key => $error) {
     if ($error == UPLOAD_ERR_OK) {
-      echo "UPLOAD ERR OK"."<br>";
       $tmpName = $_FILES['userfile']['tmp_name'][$key];
       $name = $uploadDir . basename($_FILES['userfile']['name'][$key]);
       foreach($approvedFiles as $key => $object) {
         if(strpos($name, $object->name))
-
           move_uploaded_file($tmpName, $name);
-          echo "MOVE TMP: ".$tmpName." TO : ". $name.'<br>';
       }
     }
   }
