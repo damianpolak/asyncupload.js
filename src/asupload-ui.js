@@ -92,7 +92,6 @@ module.exports = ui = () => {
         let res = id.split('-');
         let index = res[res.length-1];
         document.getElementById(`${pattern.list.id}${index}`).setAttribute('style', 'display: none;');
-        console.log(`HIDE ELEMENT: `);
       }
     };
   })();

@@ -54,6 +54,16 @@ const ui = as_ui();
 
   });
 
+  let toggleDragArea = (e) => {
+    console.log(`COUNT: ${proc.upload.files.getCount()}`);
+    if(proc.upload.files.getCount() == 0) {
+      document.getElementById('drag-area').setAttribute('style', 'display: flex');
+      console.log(`if: ${proc.upload.files.getCount()}`);
+    } else {
+      document.getElementById('drag-area').setAttribute('style', 'display: none');
+      console.log(`else: ${proc.upload.files.getCount()}`);
+    }
+  }
   // Function body for event adding files click
   let addClick = (e) => {
     ui.input.add(idFrmInputs);
@@ -65,6 +75,7 @@ const ui = as_ui();
     // EVENT CHANGE INPUT FILES
     element.addEventListener('change', (e) => {
       inputChange(e);
+      toggleDragArea(e);
     });
   }
 
@@ -81,6 +92,7 @@ const ui = as_ui();
           console.log(`Clicked: ${e.target.id}`);
 
           removeClick(e);
+          toggleDragArea(e);
         })
       }
   }
