@@ -1,6 +1,10 @@
 html, body {
   height: 100%;
 }
+.container {
+  max-width: 400px !important;
+}
+
 .formupload {
 
   left: 0px;
@@ -8,7 +12,13 @@ html, body {
   max-width: 25rem;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-
+#drag-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.2rem;
+  color: #E8E8E8;
+}
 .card-header {
   background-color: #C0C0C0;
 }
@@ -29,6 +39,10 @@ html, body {
     overflow-y: scroll;
 }
 
+#_asBtn-AddFiles:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
 .test.list-group-item {
   border-top: 1px thick black;
   border-bottom: 1px thick black;
