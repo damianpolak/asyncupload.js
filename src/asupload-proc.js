@@ -71,6 +71,7 @@ module.exports = proc = () => {
 
     let files = (() => {
       let approved = [];
+      let course = 0;
       let count = 0;
 
       let add = (item) => {
@@ -90,12 +91,17 @@ module.exports = proc = () => {
 
       let remove = (item) => {
         let index = approved.findIndex(x => x.name == item);
+        console.log(`REMOVE INDEX ${index}`);
         if(!(index < 0)) {
           approved.splice(index, 1);
+          count--;
+          console.log(`APPROVED INSIDE" ${approved}`);
+          console.log(`APPROVED COUNT: ${count}`);
           return true
         } else {
           return false;
         }
+
       }
 
       return {
@@ -105,10 +111,14 @@ module.exports = proc = () => {
           return approved;
         },
         inc: () => {
+          course++;
           count++;
         },
         getCount: () => {
           return count;
+        },
+        getCourse: () => {
+          return course;
         }
       };
     })();

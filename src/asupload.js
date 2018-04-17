@@ -85,10 +85,10 @@ const ui = as_ui();
       if(proc.upload.files.add (files[i])) {
         proc.upload.files.inc();
 
-        let fileCount = proc.upload.files.getCount();
-        ui.list.add(files[i], fileCount, idUlListFiles);
+        let fileCourse = proc.upload.files.getCourse();
+        ui.list.add(files[i], fileCourse, idUlListFiles);
 
-        document.getElementById(`${idBtnRemFile}${fileCount}`).addEventListener('click', (e) => {
+        document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
           console.log(`Clicked: ${e.target.id}`);
 
           removeClick(e);
@@ -104,6 +104,7 @@ const ui = as_ui();
     let elem = document.getElementById(`${idSpanFileName}${index}`);
     console.log(`value elem: ${elem.innerText}`);
     if(proc.upload.files.remove(elem.innerText)) {
+      console.log('TRUE REMOVE');
       ui.list.remove (e.target.id);
       console.log(proc.upload.files.list());
     }
