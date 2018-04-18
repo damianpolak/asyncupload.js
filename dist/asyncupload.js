@@ -1,4 +1,27 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+module.exports = ajax = () => {
+  'use strict';
+  return {
+    send: (url, data, additional) => {
+
+      let xhr = new XMLHttpRequest();
+      xhr.open('POST', url, true);
+
+      xhr.upload.addEventListener('progress', e => {
+        additional(e);
+      }, false);
+
+      xhr.onreadystatechange = function() {
+          if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+              // Action for success
+          }
+      }
+      xhr.send(data);
+    }
+  };
+};
+
+},{}],2:[function(require,module,exports){
 /*
  * asyncupload.js
  * https://github.com/damianpolak/asyncupload.js
@@ -38,7 +61,7 @@ module.exports = pattern = () => {
 
 };
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /*
  * asyncupload.js
  * https://github.com/damianpolak/asyncupload.js
@@ -50,6 +73,8 @@ module.exports = pattern = () => {
  * https://opensource.org/licenses/MIT
  *
  */
+const a = require('./asupload-ajax.js');
+const ajax = a();
 
 module.exports = proc = () => {
   'use strict';
@@ -57,7 +82,6 @@ module.exports = proc = () => {
     let dataForTheServer = new FormData();
 
     let prepare = (dataInputs) => {
-      console.log(dataInputs);
       let inpCount = dataInputs.length;
       for(let i = 1; i <= inpCount; i++) {
         let n = dataInputs[i-1].files.length;
@@ -75,39 +99,7 @@ module.exports = proc = () => {
     }
 
     let send = (ajaxUrl, ajaxData, progress) => {
-
-      // CHANGE TO RAW JAVASCRIPT
-
-      $.ajax({
-          type: 'POST',
-          url: ajaxUrl,
-          cache: false,
-          contentType: false,
-          processData: false,
-          data : ajaxData,
-
-          xhr: () => {
-            let xhr = new window.XMLHttpRequest();
-
-            xhr.upload.addEventListener('progress', e => {
-              if (e.lengthComputable) {
-                progress(e);
-              }
-            }, false);
-
-            return xhr;
-          },
-          success: result => {
-              console.log('success');
-              $('#response').html(result);
-          },
-          error: err => {
-              console.log(err);
-          }
-      })
-
-
-
+      ajax.send(ajaxUrl, ajaxData, progress);
     }
 
     let files = (() => {
@@ -132,12 +124,9 @@ module.exports = proc = () => {
 
       let remove = (item) => {
         let index = approved.findIndex(x => x.name == item);
-        console.log(`REMOVE INDEX ${index}`);
         if(!(index < 0)) {
           approved.splice(index, 1);
           count--;
-          console.log(`APPROVED INSIDE" ${approved}`);
-          console.log(`APPROVED COUNT: ${count}`);
           return true
         } else {
           return false;
@@ -179,7 +168,7 @@ module.exports = proc = () => {
   }
 };
 
-},{}],3:[function(require,module,exports){
+},{"./asupload-ajax.js":1}],4:[function(require,module,exports){
 /*
  * asyncupload.js
  * https://github.com/damianpolak/asyncupload.js
@@ -206,7 +195,6 @@ module.exports = ui = () => {
       add: (place) => {
         // increment quantity of inputs
         input.inc();
-        console.log('add');
 
         let element = document.createElement('input');
           element.setAttribute('name', pattern.input.name);
@@ -286,7 +274,6 @@ module.exports = ui = () => {
       inc: (value, loaded, total) => {
         document.getElementById(pattern.progress.barId).setAttribute('style', `width: ${value}%`);
         document.getElementById(pattern.progress.barId).setAttribute('aria-valuenow', `${value}`);
-        //document.getElementById(progressPattern.infoId).setAttribute(`${value}% | ${loaded}/${total}`);
         document.getElementById(pattern.progress.infoId).innerHTML = `${value}% | ${superbytes(loaded)}/${superbytes(total)}`;
       }
     }
@@ -299,7 +286,7 @@ module.exports = ui = () => {
   };
 };
 
-},{"./asupload-pattern.js":1,"./superbytes.js":5}],4:[function(require,module,exports){
+},{"./asupload-pattern.js":2,"./superbytes.js":6}],5:[function(require,module,exports){
 /*
  * asyncupload.js
  * https://github.com/damianpolak/asyncupload.js
@@ -357,13 +344,10 @@ const ui = as_ui();
   });
 
   let toggleDragArea = (e) => {
-    console.log(`COUNT: ${proc.upload.files.getCount()}`);
     if(proc.upload.files.getCount() == 0) {
       document.getElementById('drag-area').setAttribute('style', 'display: flex');
-      console.log(`if: ${proc.upload.files.getCount()}`);
     } else {
       document.getElementById('drag-area').setAttribute('style', 'display: none');
-      console.log(`else: ${proc.upload.files.getCount()}`);
     }
   }
   // Function body for event adding files click
@@ -391,7 +375,6 @@ const ui = as_ui();
         ui.list.add(files[i], fileCourse, idUlListFiles);
 
         document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
-          console.log(`Clicked: ${e.target.id}`);
 
           removeClick(e);
           toggleDragArea(e);
@@ -404,41 +387,33 @@ const ui = as_ui();
     let index = res[res.length-1];
 
     let elem = document.getElementById(`${idSpanFileName}${index}`);
-    console.log(`value elem: ${elem.innerText}`);
     if(proc.upload.files.remove(elem.innerText)) {
-      console.log('TRUE REMOVE');
       ui.list.remove (e.target.id);
-      console.log(proc.upload.files.list());
     }
   }
 
   let sendClick = (e) => {
     let ar = ui.input.getAll();
-    console.log(`SEND FILES: ${ar.length}`);
     let c = ui.input.value();
-    console.log(`SEND INPUTS: ${c}`);
     let objInputs = [];
 
     for(let i = 1; i <= c; i++)
       objInputs.push(document.getElementById(`${pattern.input.id}${i}`));
 
-    proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+      proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+        if (e.lengthComputable) {
+          let percentComplete = e.loaded / e.total;
+          percentComplete = parseInt(percentComplete * 100);
+          ui.progress.inc(percentComplete, e.loaded, e.total);
+          if (percentComplete === 100) {
 
-      var percentComplete = e.loaded / e.total;
-
-      percentComplete = parseInt(percentComplete * 100);
-
-        ui.progress.inc(percentComplete, e.loaded, e.total);
-        console.log(`TARGET: ${e.target}`);
-      if (percentComplete === 100) {
-
-      }
-    });
-
+          }
+        }
+      });
   }
 })();
 
-},{"./asupload-pattern.js":1,"./asupload-proc.js":2,"./asupload-ui.js":3}],5:[function(require,module,exports){
+},{"./asupload-pattern.js":2,"./asupload-proc.js":3,"./asupload-ui.js":4}],6:[function(require,module,exports){
 /*
  * superbytes.js
  * https://github.com/damianpolak/superbytes.js
@@ -508,4 +483,4 @@ module.exports = superbytes = (bytes, arg1, arg2) => {
    }
  };
 
-},{}]},{},[4]);
+},{}]},{},[5]);
