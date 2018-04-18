@@ -2,5 +2,6 @@
   "presets": [
     ["es2015", { "modules": false }]
   ],
-  "comments": false
+  "comments": false,
+   "plugins": ["transform-remove-console"]
 }
