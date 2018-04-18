@@ -24,7 +24,6 @@ module.exports = ui = () => {
       add: (place) => {
         // increment quantity of inputs
         input.inc();
-        console.log('add');
 
         let element = document.createElement('input');
           element.setAttribute('name', pattern.input.name);
@@ -104,7 +103,6 @@ module.exports = ui = () => {
       inc: (value, loaded, total) => {
         document.getElementById(pattern.progress.barId).setAttribute('style', `width: ${value}%`);
         document.getElementById(pattern.progress.barId).setAttribute('aria-valuenow', `${value}`);
-        //document.getElementById(progressPattern.infoId).setAttribute(`${value}% | ${loaded}/${total}`);
         document.getElementById(pattern.progress.infoId).innerHTML = `${value}% | ${superbytes(loaded)}/${superbytes(total)}`;
       }
     }

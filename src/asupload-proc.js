@@ -9,6 +9,8 @@
  * https://opensource.org/licenses/MIT
  *
  */
+const a = require('./asupload-ajax.js');
+const ajax = a();
 
 module.exports = proc = () => {
   'use strict';
@@ -16,7 +18,6 @@ module.exports = proc = () => {
     let dataForTheServer = new FormData();
 
     let prepare = (dataInputs) => {
-      console.log(dataInputs);
       let inpCount = dataInputs.length;
       for(let i = 1; i <= inpCount; i++) {
         let n = dataInputs[i-1].files.length;
@@ -34,39 +35,7 @@ module.exports = proc = () => {
     }
 
     let send = (ajaxUrl, ajaxData, progress) => {
-
-      // CHANGE TO RAW JAVASCRIPT
-
-      $.ajax({
-          type: 'POST',
-          url: ajaxUrl,
-          cache: false,
-          contentType: false,
-          processData: false,
-          data : ajaxData,
-
-          xhr: () => {
-            let xhr = new window.XMLHttpRequest();
-
-            xhr.upload.addEventListener('progress', e => {
-              if (e.lengthComputable) {
-                progress(e);
-              }
-            }, false);
-
-            return xhr;
-          },
-          success: result => {
-              console.log('success');
-              $('#response').html(result);
-          },
-          error: err => {
-              console.log(err);
-          }
-      })
-
-
-
+      ajax.send(ajaxUrl, ajaxData, progress);
     }
 
     let files = (() => {
@@ -91,12 +60,9 @@ module.exports = proc = () => {
 
       let remove = (item) => {
         let index = approved.findIndex(x => x.name == item);
-        console.log(`REMOVE INDEX ${index}`);
         if(!(index < 0)) {
           approved.splice(index, 1);
           count--;
-          console.log(`APPROVED INSIDE" ${approved}`);
-          console.log(`APPROVED COUNT: ${count}`);
           return true
         } else {
           return false;

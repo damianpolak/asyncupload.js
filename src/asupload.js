@@ -55,13 +55,10 @@ const ui = as_ui();
   });
 
   let toggleDragArea = (e) => {
-    console.log(`COUNT: ${proc.upload.files.getCount()}`);
     if(proc.upload.files.getCount() == 0) {
       document.getElementById('drag-area').setAttribute('style', 'display: flex');
-      console.log(`if: ${proc.upload.files.getCount()}`);
     } else {
       document.getElementById('drag-area').setAttribute('style', 'display: none');
-      console.log(`else: ${proc.upload.files.getCount()}`);
     }
   }
   // Function body for event adding files click
@@ -89,7 +86,6 @@ const ui = as_ui();
         ui.list.add(files[i], fileCourse, idUlListFiles);
 
         document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
-          console.log(`Clicked: ${e.target.id}`);
 
           removeClick(e);
           toggleDragArea(e);
@@ -102,36 +98,28 @@ const ui = as_ui();
     let index = res[res.length-1];
 
     let elem = document.getElementById(`${idSpanFileName}${index}`);
-    console.log(`value elem: ${elem.innerText}`);
     if(proc.upload.files.remove(elem.innerText)) {
-      console.log('TRUE REMOVE');
       ui.list.remove (e.target.id);
-      console.log(proc.upload.files.list());
     }
   }
 
   let sendClick = (e) => {
     let ar = ui.input.getAll();
-    console.log(`SEND FILES: ${ar.length}`);
     let c = ui.input.value();
-    console.log(`SEND INPUTS: ${c}`);
     let objInputs = [];
 
     for(let i = 1; i <= c; i++)
       objInputs.push(document.getElementById(`${pattern.input.id}${i}`));
 
-    proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+      proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+        if (e.lengthComputable) {
+          let percentComplete = e.loaded / e.total;
+          percentComplete = parseInt(percentComplete * 100);
+          ui.progress.inc(percentComplete, e.loaded, e.total);
+          if (percentComplete === 100) {
 
-      var percentComplete = e.loaded / e.total;
-
-      percentComplete = parseInt(percentComplete * 100);
-
-        ui.progress.inc(percentComplete, e.loaded, e.total);
-        console.log(`TARGET: ${e.target}`);
-      if (percentComplete === 100) {
-
-      }
-    });
-
+          }
+        }
+      });
   }
 })();
