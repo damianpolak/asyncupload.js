@@ -1,3 +1,15 @@
+/*
+ * asyncupload.js
+ * https://github.com/damianpolak/asyncupload.js
+ *
+ * Copyright 2017, Damian Polak
+ * lib used: Bootstrap 4.0.0, superbytes.js
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ *
+ */
+ 
 module.exports = ajax = () => {
   'use strict';
   return {
