@@ -1,5 +1,17 @@
 # asyncupload.js
-Library provides simple asynchronous multi file upload with progress bar, drag&amp;drop support, selection, add or remove files before upload and extensions validation. All written in JavaScript and server-side PHP.
+> JavaScript/PHP simple file uploader
+
+Asyncupload.js is a simple widget, provides asynchronous multiple file upload with progress bar, drag & drop support, selection, add or remove files before upload, extensions validation. All written in JavaScript and server-side PHP.
+
+## Available functions
+
+- asynchronous multiple file upload
+- adding and deleting files before upload
+- progress bar
+
+## In progress
+- drag & drop support
+- extensions validation
 
 ## License
 
