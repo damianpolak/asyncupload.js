@@ -1,7 +1,7 @@
 {
   "presets": [
     ["es2015", { "modules": false }],
-    ["babili"]
+    ["minify"]
   ],
   "comments": false,
    "plugins": ["transform-remove-console"]
