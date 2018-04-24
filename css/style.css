@@ -12,26 +12,37 @@ html, body {
   max-width: 25rem;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-#drag-area {
+#dropText {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 2.2rem;
   color: #E8E8E8;
 }
+
+.dropZone {
+  height: 100%;
+  width: 100%;
+  pointer-events: auto;
+  background-color: red;
+  position: absolute !important;
+  opacity: 0.2;
+  z-index: 1;
+}
+
 .card-header {
   background-color: #C0C0C0;
 }
-#scrlist::-webkit-scrollbar {
+#scrollZone::-webkit-scrollbar {
     width: 10px;
 }
-#scrlist::-webkit-scrollbar-track {
+#scrollZone::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
-#scrlist::-webkit-scrollbar-thumb {
+#scrollZone::-webkit-scrollbar-thumb {
     background: #d3d3d3;
 }
-#scrlist::-webkit-scrollbar-thumb:hover {
+#scrollZone::-webkit-scrollbar-thumb:hover {
     background: #c6c6c6;
 }
 .scrollbar {

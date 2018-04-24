@@ -250,6 +250,28 @@ module.exports = ui = () => {
     };
   })();
 
+  let drop = (() => {
+    let count = 0;
+    return {
+      add: (place) => {
+        // increment quantity of inputs
+        drop.inc();
+        let element = document.createElement('div');
+          element.setAttribute('class', 'dropZone');
+          element.setAttribute('id', `_asDrop-FileItem-${drop.value()}`);
+
+        document.getElementById(place).appendChild(element);
+      },
+      inc: () => {
+        count++;
+      },
+      value: () => {
+        return count;
+      }
+
+    };
+  })();
+
   let list = (() => {
 
     return {
@@ -306,6 +328,7 @@ module.exports = ui = () => {
 
   return {
     input: input,
+    drop: drop,
     list: list,
     progress: progress
   };
@@ -366,13 +389,64 @@ const ui = as_ui();
       sendClick(e);
     });
 
+    // DROP ZONE TESTS - PROTOTYPE
+
+    document.getElementById('scrollZone').addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('File(s) dropped');
+
+      /*
+      if(e.dataTransfer.files) {
+        console.log('datatransfer files');
+
+        for (var i = 0; i < e.dataTransfer.files.length; i++) {
+          console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
+        }
+        console.log(e.dataTransfer.files);
+      }
+
+      let files = e.dataTransfer.files;
+      for(let i = 0; i <= files.length-1; i++)
+        if(proc.upload.files.add (files[i])) {
+          proc.upload.files.inc();
+          toggleDragArea('dropText');
+          console.log(`Files count: ${proc.upload.files.getCount()}`);
+          let fileCourse = proc.upload.files.getCourse();
+          ui.list.add(files[i], i, idUlListFiles);
+
+          document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
+
+            removeClick(e);
+            toggleDragArea('dropText');
+          })
+        }
+        console.log(proc.upload.files);*/
+
+    });
+
+    document.getElementById('scrollZone').addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("In Drop Zone");
+
+    });
+
+    document.getElementById('scrollZone').addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Drag Leave');
+
+    });
+
+    // DROP ZONE END
   });
 
-  let toggleDragArea = (e) => {
+  let toggleDragArea = (elementId) => {
     if(proc.upload.files.getCount() == 0) {
-      document.getElementById('drag-area').setAttribute('style', 'display: flex');
+      document.getElementById(elementId).setAttribute('style', 'display: flex');
     } else {
-      document.getElementById('drag-area').setAttribute('style', 'display: none');
+      document.getElementById(elementId).setAttribute('style', 'display: none');
     }
   }
   // Function body for event adding files click
@@ -386,7 +460,10 @@ const ui = as_ui();
     // EVENT CHANGE INPUT FILES
     element.addEventListener('change', (e) => {
       inputChange(e);
-      toggleDragArea(e);
+      toggleDragArea('dropText');
+
+      console.log('Get All:');
+      console.log(ui.input.getAll());
     });
   }
 
@@ -402,7 +479,7 @@ const ui = as_ui();
         document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
 
           removeClick(e);
-          toggleDragArea(e);
+          toggleDragArea('dropText');
         })
       }
   }

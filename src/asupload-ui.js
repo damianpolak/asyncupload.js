@@ -54,6 +54,28 @@ module.exports = ui = () => {
     };
   })();
 
+  let drop = (() => {
+    let count = 0;
+    return {
+      add: (place) => {
+        // increment quantity of inputs
+        drop.inc();
+        let element = document.createElement('div');
+          element.setAttribute('class', 'dropZone');
+          element.setAttribute('id', `_asDrop-FileItem-${drop.value()}`);
+
+        document.getElementById(place).appendChild(element);
+      },
+      inc: () => {
+        count++;
+      },
+      value: () => {
+        return count;
+      }
+
+    };
+  })();
+
   let list = (() => {
 
     return {
@@ -110,6 +132,7 @@ module.exports = ui = () => {
 
   return {
     input: input,
+    drop: drop,
     list: list,
     progress: progress
   };
