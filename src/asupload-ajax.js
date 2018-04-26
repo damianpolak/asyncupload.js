@@ -13,14 +13,12 @@
 module.exports = ajax = () => {
   'use strict';
   return {
-    send: (url, data, additional) => {
+    send: (url, data, eventListeners) => {
 
       let xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
 
-      xhr.upload.addEventListener('progress', e => {
-        additional(e);
-      }, false);
+      eventListeners(xhr);
 
       xhr.upload.addEventListener("error", () => {
         console.log('TRANSFER FAILED!');
@@ -38,6 +36,7 @@ module.exports = ajax = () => {
           if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
               // Action for success
               console.log('success');
+              console.log(xhr.response);
           }
       }
       xhr.send(data);

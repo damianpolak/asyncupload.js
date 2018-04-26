@@ -29,9 +29,14 @@ module.exports = pattern = () => {
     infoId: '_asP-ProgressInfo'
   };
 
+  const dropzone = {
+    id: 'scrollZone'
+  };
+
   return {
     input: input,
     list: list,
+    dropzone: dropzone,
     progress: progress
   };
 

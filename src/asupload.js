@@ -35,6 +35,8 @@ const ui = as_ui();
   let elBtnAddFiles = document.getElementById(idBtnAddFiles);
   let elBtnSendFiles = document.getElementById(idBtnSendFiles);
 
+  var dropData = new FormData();
+
   // Main container - document ready
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -52,13 +54,46 @@ const ui = as_ui();
       sendClick(e);
     });
 
+    // DROP ZONE TESTS - PROTOTYPE
+
+    document.getElementById(pattern.dropzone.id).addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+
+      addElementList(e.dataTransfer.files);
+      for(let i = 0; i <= e.dataTransfer.files.length; i++) {
+        dropData.append('userfile[]', e.dataTransfer.files[i]);
+      }
+
+      if(e.dataTransfer.files.length == 0) {
+        toggleDragArea('dropText');
+      } else {
+        toggleDragArea('dropText');
+      }
+    });
+
+    document.getElementById(pattern.dropzone.id).addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      //console.log("In Drop Zone");
+
+    });
+
+    document.getElementById(pattern.dropzone.id).addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      //console.log('Drag Leave');
+
+    });
+
   });
 
-  let toggleDragArea = (e) => {
+  let toggleDragArea = (elementId) => {
     if(proc.upload.files.getCount() == 0) {
-      document.getElementById('drag-area').setAttribute('style', 'display: flex');
+      document.getElementById(elementId).setAttribute('style', 'display: flex');
     } else {
-      document.getElementById('drag-area').setAttribute('style', 'display: none');
+      document.getElementById(elementId).setAttribute('style', 'display: none');
     }
   }
   // Function body for event adding files click
@@ -71,13 +106,14 @@ const ui = as_ui();
 
     // EVENT CHANGE INPUT FILES
     element.addEventListener('change', (e) => {
-      inputChange(e);
-      toggleDragArea(e);
+      addElementList(e.target.files);
+      toggleDragArea('dropText');
+
     });
   }
 
-  let inputChange = (e) => {
-    let files = e.target.files;
+  let addElementList = (filesObject) => {
+    let files = filesObject;
     for(let i = 0; i <= files.length-1; i++)
       if(proc.upload.files.add (files[i])) {
         proc.upload.files.inc();
@@ -88,7 +124,7 @@ const ui = as_ui();
         document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
 
           removeClick(e);
-          toggleDragArea(e);
+          toggleDragArea('dropText');
         })
       }
   }
@@ -106,20 +142,31 @@ const ui = as_ui();
   let sendClick = (e) => {
     let ar = ui.input.getAll();
     let c = ui.input.value();
-    let objInputs = [];
+    let inputObjects = [];
 
-    for(let i = 1; i <= c; i++)
-      objInputs.push(document.getElementById(`${pattern.input.id}${i}`));
+    for(let i = 1; i <= c; i++) {
+      // Add input elements to object array
+      inputObjects.push(document.getElementById(`${pattern.input.id}${i}`));
+    }
 
-      proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+    // Method for send files from both drop and input objects
+    proc.upload.send('server/upload.php', proc.upload.prepare(inputObjects, dropData.getAll('userfile[]')), xhr => {
+      xhr.upload.addEventListener('progress', e => {
         if (e.lengthComputable) {
           let percentComplete = e.loaded / e.total;
           percentComplete = parseInt(percentComplete * 100);
           ui.progress.inc(percentComplete, e.loaded, e.total);
+
           if (percentComplete === 100) {
 
           }
         }
-      });
+      }, false);
+
+      xhr.upload.addEventListener('loadstart', e => {
+
+      }, false);
+    });
+
   }
 })();
