@@ -65,20 +65,12 @@ const ui = as_ui();
       for(let i = 0; i <= e.dataTransfer.files.length; i++) {
         dropData.append('userfile[]', e.dataTransfer.files[i]);
       }
-      console.log(`DROP DATA LENGTH: ${dropData.getAll('userfile[]').length}`);
-      console.log('asdqweqweqwe');
-      console.log('----- FILE LIST EVENT DROP ----------');
-      console.log(proc.upload.files.list());
 
       if(e.dataTransfer.files.length == 0) {
         toggleDragArea('dropText');
       } else {
         toggleDragArea('dropText');
       }
-    });
-
-    document.getElementById('btnTest').addEventListener('click', (e) => {
-      console.log(proc.upload.files.list());
     });
 
     document.getElementById(pattern.dropzone.id).addEventListener('dragover', (e) => {
@@ -94,7 +86,6 @@ const ui = as_ui();
       //console.log('Drag Leave');
 
     });
-
 
   });
 
@@ -118,9 +109,6 @@ const ui = as_ui();
       addElementList(e.target.files);
       toggleDragArea('dropText');
 
-      console.log('asdqweqweqwe');
-      console.log('----- FILE LIST EVENT CHANGE ----------');
-      console.log(proc.upload.files.list());
     });
   }
 
@@ -149,44 +137,36 @@ const ui = as_ui();
     if(proc.upload.files.remove(elem.innerText)) {
       ui.list.remove (e.target.id);
     }
-
-    console.log('asdqweqweqwe');
-    console.log('----- FILE LIST EVENT CHANGE ----------');
-    console.log(proc.upload.files.list());
   }
 
   let sendClick = (e) => {
     let ar = ui.input.getAll();
     let c = ui.input.value();
-    let dataObjects = [];
+    let inputObjects = [];
 
     for(let i = 1; i <= c; i++) {
-      // Input objects
-      dataObjects.push(document.getElementById(`${pattern.input.id}${i}`));
+      // Add input elements to object array
+      inputObjects.push(document.getElementById(`${pattern.input.id}${i}`));
     }
 
-    console.log(ui.test.getAll());/*
-    proc.upload.send('server/upload.php', proc.upload.prepareInputs(dataObjects), e => {
-      if (e.lengthComputable) {
-        let percentComplete = e.loaded / e.total;
-        percentComplete = parseInt(percentComplete * 100);
-        ui.progress.inc(percentComplete, e.loaded, e.total);
-        if (percentComplete === 100) {
+    // Method for send files from both drop and input objects
+    proc.upload.send('server/upload.php', proc.upload.prepare(inputObjects, dropData.getAll('userfile[]')), xhr => {
+      xhr.upload.addEventListener('progress', e => {
+        if (e.lengthComputable) {
+          let percentComplete = e.loaded / e.total;
+          percentComplete = parseInt(percentComplete * 100);
+          ui.progress.inc(percentComplete, e.loaded, e.total);
 
+          if (percentComplete === 100) {
+
+          }
         }
-      }
-    });*/
+      }, false);
 
+      xhr.upload.addEventListener('loadstart', e => {
 
-    proc.upload.send('server/upload.php', proc.upload.prepareDrop(dropData), e => {
-      if (e.lengthComputable) {
-        let percentComplete = e.loaded / e.total;
-        percentComplete = parseInt(percentComplete * 100);
-        ui.progress.inc(percentComplete, e.loaded, e.total);
-        if (percentComplete === 100) {
-
-        }
-      }
+      }, false);
     });
+
   }
 })();

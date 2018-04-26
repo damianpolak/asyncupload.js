@@ -16,28 +16,43 @@ module.exports = proc = () => {
   let upload = (() => {
     let dataForTheServer = new FormData();
 
-    let prepareInputs = (dataObjects) => {
-      let objectsCount = dataObjects.length;
+    let prepare = (inputObjects, dropObjects) => {
 
-      for(let i = 1; i <= objectsCount; i++) {
-        let n = dataObjects[i-1].files.length;
+      // Prepare input objects
+      // Check and search duplicates
+      let countInputs = inputObjects.length;
+      for(let i = 1; i <= countInputs; i++) {
+        let n = inputObjects[i-1].files.length;
         for(let j = 0; j <= n - 1; j++) {
-          let file = dataObjects[i-1].files[j];
+          let file = inputObjects[i-1].files[j];
           let d = dataForTheServer.getAll('userfile[]');
           if(!d.find(x => x.name === file.name)) {
             if(files.list().find(x => x.name === file.name))
+
+              // Append file object to FormData
               dataForTheServer.append('userfile[]', file);
           }
         }
       }
 
+      // Prepare drop drop drop objects
+      // Check and search duplicates
+      let countDrops = dropObjects.length - 1;
+      for(let i = 0; i <= countDrops; i++) {
+        let file = dropObjects[i];
+
+        let d = dataForTheServer.getAll('userfile[]');
+        if(!d.find(x => x.name === file.name)) {
+          if(files.list().find(x => x.name === file.name))
+
+            // Append file object to FormData
+            dataForTheServer.append('userfile[]', file);
+        }
+      }
+
+      // Append json array with approved files
       dataForTheServer.append('approvedFiles', JSON.stringify(files.list()));
       return dataForTheServer;
-    }
-
-    let prepareDrop = (dropData) => {
-      dropData.append('approvedFiles', JSON.stringify(files.list()));
-      return dropData
     }
 
     let send = (ajaxUrl, ajaxData, progress) => {
@@ -102,8 +117,7 @@ module.exports = proc = () => {
       getData: () => {
         return dataForTheServer;
       },
-      prepareInputs: prepareInputs,
-      prepareDrop: prepareDrop
+      prepare: prepare
     }
   })();
 
