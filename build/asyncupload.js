@@ -14,14 +14,12 @@
 module.exports = ajax = () => {
   'use strict';
   return {
-    send: (url, data, additional) => {
+    send: (url, data, eventListeners) => {
 
       let xhr = new XMLHttpRequest();
       xhr.open('POST', url, true);
 
-      xhr.upload.addEventListener('progress', e => {
-        additional(e);
-      }, false);
+      eventListeners(xhr);
 
       xhr.upload.addEventListener("error", () => {
         console.log('TRANSFER FAILED!');
@@ -39,6 +37,7 @@ module.exports = ajax = () => {
           if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
               // Action for success
               console.log('success');
+              console.log(xhr.response);
           }
       }
       xhr.send(data);
@@ -78,9 +77,14 @@ module.exports = pattern = () => {
     infoId: '_asP-ProgressInfo'
   };
 
+  const dropzone = {
+    id: 'scrollZone'
+  };
+
   return {
     input: input,
     list: list,
+    dropzone: dropzone,
     progress: progress
   };
 
@@ -99,31 +103,53 @@ module.exports = pattern = () => {
  *
  */
 const a = require('./asupload-ajax.js');
-const ajax = a();
 
 module.exports = proc = () => {
   'use strict';
   let upload = (() => {
     let dataForTheServer = new FormData();
 
-    let prepare = (dataInputs) => {
-      let inpCount = dataInputs.length;
-      for(let i = 1; i <= inpCount; i++) {
-        let n = dataInputs[i-1].files.length;
+    let prepare = (inputObjects, dropObjects) => {
+
+      // Prepare input objects
+      // Check and search duplicates
+      let countInputs = inputObjects.length;
+      for(let i = 1; i <= countInputs; i++) {
+        let n = inputObjects[i-1].files.length;
         for(let j = 0; j <= n - 1; j++) {
-          let file = dataInputs[i-1].files[j];
+          let file = inputObjects[i-1].files[j];
           let d = dataForTheServer.getAll('userfile[]');
           if(!d.find(x => x.name === file.name)) {
             if(files.list().find(x => x.name === file.name))
+
+              // Append file object to FormData
               dataForTheServer.append('userfile[]', file);
           }
         }
       }
+
+      // Prepare drop drop drop objects
+      // Check and search duplicates
+      let countDrops = dropObjects.length - 1;
+      for(let i = 0; i <= countDrops; i++) {
+        let file = dropObjects[i];
+
+        let d = dataForTheServer.getAll('userfile[]');
+        if(!d.find(x => x.name === file.name)) {
+          if(files.list().find(x => x.name === file.name))
+
+            // Append file object to FormData
+            dataForTheServer.append('userfile[]', file);
+        }
+      }
+
+      // Append json array with approved files
       dataForTheServer.append('approvedFiles', JSON.stringify(files.list()));
       return dataForTheServer;
     }
 
     let send = (ajaxUrl, ajaxData, progress) => {
+      const ajax = a();
       ajax.send(ajaxUrl, ajaxData, progress);
     }
 
@@ -213,9 +239,7 @@ const pattern = as_patt();
 module.exports = ui = () => {
   'use strict';
   let input = (() => {
-
     let count = 0;
-
     return {
       add: (place) => {
         // increment quantity of inputs
@@ -252,15 +276,15 @@ module.exports = ui = () => {
 
   let drop = (() => {
     let count = 0;
-    return {
-      add: (place) => {
-        // increment quantity of inputs
-        drop.inc();
-        let element = document.createElement('div');
-          element.setAttribute('class', 'dropZone');
-          element.setAttribute('id', `_asDrop-FileItem-${drop.value()}`);
+    var dropObjects = [];
 
-        document.getElementById(place).appendChild(element);
+    return {
+      add: (item) => {
+        drop.inc();
+        dropObjects.push(item);
+      },
+      getAll: () => {
+        return dropObjects;
       },
       inc: () => {
         count++;
@@ -268,10 +292,29 @@ module.exports = ui = () => {
       value: () => {
         return count;
       }
-
     };
   })();
 
+  let test = (() => {
+    let count = 0;
+    var dropObjects = [];
+
+    return {
+      add: (item) => {
+        test.inc();
+        dropObjects.push(item);
+      },
+      getAll: () => {
+        return dropObjects;
+      },
+      inc: () => {
+        count++;
+      },
+      value: () => {
+        return count;
+      }
+    };
+  })();
   let list = (() => {
 
     return {
@@ -330,6 +373,7 @@ module.exports = ui = () => {
     input: input,
     drop: drop,
     list: list,
+    test: test,
     progress: progress
   };
 };
@@ -372,6 +416,8 @@ const ui = as_ui();
   let elBtnAddFiles = document.getElementById(idBtnAddFiles);
   let elBtnSendFiles = document.getElementById(idBtnSendFiles);
 
+  var dropData = new FormData();
+
   // Main container - document ready
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -391,55 +437,37 @@ const ui = as_ui();
 
     // DROP ZONE TESTS - PROTOTYPE
 
-    document.getElementById('scrollZone').addEventListener('drop', (e) => {
+    document.getElementById(pattern.dropzone.id).addEventListener('drop', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('File(s) dropped');
 
-      /*
-      if(e.dataTransfer.files) {
-        console.log('datatransfer files');
 
-        for (var i = 0; i < e.dataTransfer.files.length; i++) {
-          console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
-        }
-        console.log(e.dataTransfer.files);
+      addElementList(e.dataTransfer.files);
+      for(let i = 0; i <= e.dataTransfer.files.length; i++) {
+        dropData.append('userfile[]', e.dataTransfer.files[i]);
       }
 
-      let files = e.dataTransfer.files;
-      for(let i = 0; i <= files.length-1; i++)
-        if(proc.upload.files.add (files[i])) {
-          proc.upload.files.inc();
-          toggleDragArea('dropText');
-          console.log(`Files count: ${proc.upload.files.getCount()}`);
-          let fileCourse = proc.upload.files.getCourse();
-          ui.list.add(files[i], i, idUlListFiles);
-
-          document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
-
-            removeClick(e);
-            toggleDragArea('dropText');
-          })
-        }
-        console.log(proc.upload.files);*/
-
+      if(e.dataTransfer.files.length == 0) {
+        toggleDragArea('dropText');
+      } else {
+        toggleDragArea('dropText');
+      }
     });
 
-    document.getElementById('scrollZone').addEventListener('dragover', (e) => {
+    document.getElementById(pattern.dropzone.id).addEventListener('dragover', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("In Drop Zone");
+      //console.log("In Drop Zone");
 
     });
 
-    document.getElementById('scrollZone').addEventListener('dragleave', (e) => {
+    document.getElementById(pattern.dropzone.id).addEventListener('dragleave', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('Drag Leave');
+      //console.log('Drag Leave');
 
     });
 
-    // DROP ZONE END
   });
 
   let toggleDragArea = (elementId) => {
@@ -459,16 +487,14 @@ const ui = as_ui();
 
     // EVENT CHANGE INPUT FILES
     element.addEventListener('change', (e) => {
-      inputChange(e);
+      addElementList(e.target.files);
       toggleDragArea('dropText');
 
-      console.log('Get All:');
-      console.log(ui.input.getAll());
     });
   }
 
-  let inputChange = (e) => {
-    let files = e.target.files;
+  let addElementList = (filesObject) => {
+    let files = filesObject;
     for(let i = 0; i <= files.length-1; i++)
       if(proc.upload.files.add (files[i])) {
         proc.upload.files.inc();
@@ -497,21 +523,32 @@ const ui = as_ui();
   let sendClick = (e) => {
     let ar = ui.input.getAll();
     let c = ui.input.value();
-    let objInputs = [];
+    let inputObjects = [];
 
-    for(let i = 1; i <= c; i++)
-      objInputs.push(document.getElementById(`${pattern.input.id}${i}`));
+    for(let i = 1; i <= c; i++) {
+      // Add input elements to object array
+      inputObjects.push(document.getElementById(`${pattern.input.id}${i}`));
+    }
 
-      proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
+    // Method for send files from both drop and input objects
+    proc.upload.send('server/upload.php', proc.upload.prepare(inputObjects, dropData.getAll('userfile[]')), xhr => {
+      xhr.upload.addEventListener('progress', e => {
         if (e.lengthComputable) {
           let percentComplete = e.loaded / e.total;
           percentComplete = parseInt(percentComplete * 100);
           ui.progress.inc(percentComplete, e.loaded, e.total);
+
           if (percentComplete === 100) {
 
           }
         }
-      });
+      }, false);
+
+      xhr.upload.addEventListener('loadstart', e => {
+
+      }, false);
+    });
+
   }
 })();
 
