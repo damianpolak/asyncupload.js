@@ -1,19 +1,539 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-module.exports=ajax=function ajax(){'use strict';return{send:function send(a,b,c){var d=new XMLHttpRequest;d.open('POST',a,!0),d.upload.addEventListener('progress',function(a){c(a)},!1),d.upload.addEventListener('error',function(){},!1),d.upload.addEventListener('abort',function(){},!1),d.upload.addEventListener('loadend',function(){},!1),d.onreadystatechange=function(){d.readyState!=XMLHttpRequest.DONE||200!=d.status},d.send(b)}}};
+(function () {
+  function r(e, n, t) {
+    function o(i, f) {
+      if (!n[i]) {
+        if (!e[i]) {
+          var c = "function" == typeof require && require;if (!f && c) return c(i, !0);if (u) return u(i, !0);var a = new Error("Cannot find module '" + i + "'");throw a.code = "MODULE_NOT_FOUND", a;
+        }var p = n[i] = { exports: {} };e[i][0].call(p.exports, function (r) {
+          var n = e[i][1][r];return o(n || r);
+        }, p, p.exports, r, e, n, t);
+      }return n[i].exports;
+    }for (var u = "function" == typeof require && require, i = 0; i < t.length; i++) {
+      o(t[i]);
+    }return o;
+  }return r;
+})()({ 1: [function (require, module, exports) {
 
-},{}],2:[function(require,module,exports){
-module.exports=pattern=function pattern(){'use strict';return{input:{name:'userfile[]',type:'file',id:'_asInp-FileItem-'},list:{id:'_asLi-FileItem-',class:'test list-group-item align-middle'},progress:{wrapperId:'_asLi-ProgressBar',barId:'_asDiv-ProgressBar',infoId:'_asP-ProgressInfo'}}};
+    module.exports = ajax = function ajax() {
+      'use strict';
 
-},{}],3:[function(require,module,exports){
-var a=require('./asupload-ajax.js'),ajax=a();module.exports=proc=function proc(){'use strict';var a=function(){var a=new FormData,b=function(){var a=[],b=0,c=0,d=function(b){var d=a.findIndex(function(a){return a.name==b});return!(0>d)&&(a.splice(d,1),c--,!0)};return{add:function add(b){var c=a.find(function(a){return a.name===b.name});return!(void 0!=c)&&(a.push({name:b.name,type:b.type,size:b.size}),!0)},remove:d,list:function list(){return a},inc:function inc(){b++,c++},getCount:function getCount(){return c},getCourse:function getCourse(){return b}}}();return{send:function send(a,b,c){ajax.send(a,b,c)},files:b,getData:function getData(){return a},prepare:function prepare(c){for(var d=c.length,e=1;e<=d;e++)for(var f=c[e-1].files.length,g=function(f){var g=c[e-1].files[f],h=a.getAll('userfile[]');!h.find(function(a){return a.name===g.name})&&b.list().find(function(a){return a.name===g.name})&&a.append('userfile[]',g)},f=0;h<=f-1;h++)g(f);return a.append('approvedFiles',JSON.stringify(b.list())),a}}}();return{upload:a}};
+      return {
+        send: function send(url, data, eventListeners) {
 
-},{"./asupload-ajax.js":1}],4:[function(require,module,exports){
-var as_patt=require('./asupload-pattern.js'),superbytes=require('./superbytes.js'),pattern=as_patt();module.exports=ui=function ui(){'use strict';var a=function(){var b=0;return{add:function add(b){a.inc();var c=document.createElement('input');c.setAttribute('name',pattern.input.name),c.setAttribute('type',pattern.input.type),c.setAttribute('id',''+pattern.input.id+a.value()),c.setAttribute('hidden','hidden'),c.setAttribute('multiple','multiple'),document.getElementById(b).appendChild(c)},inc:function inc(){b++},value:function value(){return b},getAll:function getAll(){for(var b,c=[],d=1;d<=a.value();d++){b=document.getElementById(''+pattern.input.id+d).files.length;for(var e=0;e<=b-1;e++)c.push(document.getElementById(''+pattern.input.id+d).files[e])}return c},pattern:pattern}}(),b=function(){return{add:function add(a,b,c){var d=document.createElement('li');d.setAttribute('class',pattern.list.class),d.setAttribute('id',''+pattern.list.id+b),document.getElementById(c).appendChild(d);var e=document.createElement('div');e.setAttribute('class','itemTextTrunc'),document.getElementById(''+pattern.list.id+b).appendChild(e);var f=document.createElement('span');f.setAttribute('id','_as-FileItem-Name-'+b),e.appendChild(f),f.innerHTML=a.name;var g=document.createElement('div');g.setAttribute('class','_asDiv-ItemInfo'),e.appendChild(g),g.innerHTML='Size: '+superbytes(a.size)+' | Type: '+a.type;var h=document.createElement('div');h.setAttribute('class','itemRemoveButton'),d.appendChild(h);var i=document.createElement('i');i.setAttribute('class','btn-act fa fa-times text-primary'),i.setAttribute('id','_asI-FileItem-Rem-'+b),h.appendChild(i)},remove:function remove(a){var b=a.split('-'),c=b[b.length-1];document.getElementById(''+pattern.list.id+c).setAttribute('style','display: none;')}}}(),c=function(){return{show:function show(){document.getElementById(pattern.progress.wrapperId).setAttribute('style','display: block;')},inc:function inc(a,b,c){document.getElementById(pattern.progress.barId).setAttribute('style','width: '+a+'%'),document.getElementById(pattern.progress.barId).setAttribute('aria-valuenow',''+a),document.getElementById(pattern.progress.infoId).innerHTML=a+'% | '+superbytes(b)+'/'+superbytes(c)}}}();return{input:a,list:b,progress:c}};
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', url, true);
 
-},{"./asupload-pattern.js":2,"./superbytes.js":6}],5:[function(require,module,exports){
-var as_proc=require('./asupload-proc.js'),as_patt=require('./asupload-pattern.js'),as_ui=require('./asupload-ui.js'),proc=as_proc(),pattern=as_patt(),ui=as_ui();(function(){'use strict';var a=document.getElementById('_asBtn-AddFiles'),b=document.getElementById('_asBtn-SendFiles');document.addEventListener('DOMContentLoaded',function(){a.addEventListener('click',function(a){d(a)}),b.addEventListener('click',function(a){a.preventDefault(),ui.progress.show(),document.getElementById('_asLi-SendFiles').setAttribute('style','display: none'),h(a)})});var c=function(a){0==proc.upload.files.getCount()?document.getElementById(a).setAttribute('style','display: flex'):document.getElementById(a).setAttribute('style','display: none')},d=function(){ui.input.add('_asFrm-InputFiles');var a=''+pattern.input.id+ui.input.value(),b=document.getElementById(a);b.click(),b.addEventListener('change',function(a){f(a),c('dropText')})},f=function(a){for(var b=a.target.files,d=0;d<=b.length-1;d++)if(proc.upload.files.add(b[d])){proc.upload.files.inc();var e=proc.upload.files.getCourse();ui.list.add(b[d],e,'_asUl-ListFiles'),document.getElementById('_asI-FileItem-Rem-'+e).addEventListener('click',function(a){g(a),c('dropText')})}},g=function(a){var b=a.target.id.split('-'),c=b[b.length-1],d=document.getElementById('_as-FileItem-Name-'+c);proc.upload.files.remove(d.innerText)&&ui.list.remove(a.target.id)},h=function(){for(var a=ui.input.getAll(),b=ui.input.value(),c=[],d=1;d<=b;d++)c.push(document.getElementById(''+pattern.input.id+d));proc.upload.send('server/upload.php',proc.upload.prepare(c),function(a){if(a.lengthComputable){var b=a.loaded/a.total;b=parseInt(100*b),ui.progress.inc(b,a.loaded,a.total),100===b}})}})();
+          eventListeners(xhr);
 
-},{"./asupload-pattern.js":2,"./asupload-proc.js":3,"./asupload-ui.js":4}],6:[function(require,module,exports){
-module.exports=superbytes=function superbytes(a,b,c){'use strict';var d=Math.pow,e=['B','KB','MB','GB','TB','PB','EB','ZB','YB'];a=Math.abs(a);var f,g=0;if(void 0===b&&void 0===c&&(f=1024,g=2),'boolean'==typeof b?(f=b?1e3:1024,g='number'==typeof c?c:2):'number'==typeof b&&(g=b,f='boolean'==typeof c?c?1e3:1024:1024),Number.isFinite(a)){if(a<f){var h=a;return h+' '+e[0]}for(var j=1;8>=j;j++)if(a>=d(f,j)&&a<d(f,j+1)){var i=(a/d(f,j)).toFixed(g);return i+' '+e[j]}}};
+          xhr.upload.addEventListener("error", function () {}, false);
 
-},{}]},{},[5]);
+          xhr.upload.addEventListener("abort", function () {}, false);
+
+          xhr.upload.addEventListener("loadend", function () {}, false);
+
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {}
+          };
+          xhr.send(data);
+        }
+      };
+    };
+  }, {}], 2: [function (require, module, exports) {
+
+    module.exports = pattern = function pattern() {
+      'use strict';
+
+      var input = {
+        name: 'userfile[]',
+        type: 'file',
+        id: '_asInp-FileItem-'
+      };
+
+      var list = {
+        id: '_asLi-FileItem-',
+        class: 'test list-group-item align-middle'
+      };
+
+      var progress = {
+        wrapperId: '_asLi-ProgressBar',
+        barId: '_asDiv-ProgressBar',
+        infoId: '_asP-ProgressInfo'
+      };
+
+      var dropzone = {
+        id: 'scrollZone'
+      };
+
+      return {
+        input: input,
+        list: list,
+        dropzone: dropzone,
+        progress: progress
+      };
+    };
+  }, {}], 3: [function (require, module, exports) {
+    var a = require('./asupload-ajax.js');
+
+    module.exports = proc = function proc() {
+      'use strict';
+
+      var upload = function () {
+        var dataForTheServer = new FormData();
+
+        var prepare = function prepare(inputObjects, dropObjects) {
+          var countInputs = inputObjects.length;
+          for (var i = 1; i <= countInputs; i++) {
+            var n = inputObjects[i - 1].files.length;
+
+            var _loop = function _loop(j) {
+              var file = inputObjects[i - 1].files[j];
+              var d = dataForTheServer.getAll('userfile[]');
+              if (!d.find(function (x) {
+                return x.name === file.name;
+              })) {
+                if (files.list().find(function (x) {
+                  return x.name === file.name;
+                })) dataForTheServer.append('userfile[]', file);
+              }
+            };
+
+            for (var j = 0; j <= n - 1; j++) {
+              _loop(j);
+            }
+          }
+
+          var countDrops = dropObjects.length - 1;
+
+          var _loop2 = function _loop2(_i) {
+            var file = dropObjects[_i];
+
+            var d = dataForTheServer.getAll('userfile[]');
+            if (!d.find(function (x) {
+              return x.name === file.name;
+            })) {
+              if (files.list().find(function (x) {
+                return x.name === file.name;
+              })) dataForTheServer.append('userfile[]', file);
+            }
+          };
+
+          for (var _i = 0; _i <= countDrops; _i++) {
+            _loop2(_i);
+          }
+
+          dataForTheServer.append('approvedFiles', JSON.stringify(files.list()));
+          return dataForTheServer;
+        };
+
+        var send = function send(ajaxUrl, ajaxData, progress) {
+          var ajax = a();
+          ajax.send(ajaxUrl, ajaxData, progress);
+        };
+
+        var files = function () {
+          var approved = [];
+          var course = 0;
+          var count = 0;
+
+          var add = function add(item) {
+            var result = approved.find(function (x) {
+              return x.name === item.name;
+            });
+            if (result == undefined) {
+              approved.push({
+                'name': item.name,
+                'type': item.type,
+                'size': item.size
+              });
+              return true;
+            } else {
+              return false;
+            }
+          };
+
+          var remove = function remove(item) {
+            var index = approved.findIndex(function (x) {
+              return x.name == item;
+            });
+            if (!(index < 0)) {
+              approved.splice(index, 1);
+              count--;
+              return true;
+            } else {
+              return false;
+            }
+          };
+
+          return {
+            add: add,
+            remove: remove,
+            list: function list() {
+              return approved;
+            },
+            inc: function inc() {
+              course++;
+              count++;
+            },
+            getCount: function getCount() {
+              return count;
+            },
+            getCourse: function getCourse() {
+              return course;
+            }
+          };
+        }();
+
+        return {
+          send: send,
+          files: files,
+          getData: function getData() {
+            return dataForTheServer;
+          },
+          prepare: prepare
+        };
+      }();
+
+      return {
+        upload: upload
+      };
+    };
+  }, { "./asupload-ajax.js": 1 }], 4: [function (require, module, exports) {
+
+    var as_patt = require('./asupload-pattern.js');
+    var superbytes = require('./superbytes.js');
+    var pattern = as_patt();
+
+    module.exports = ui = function ui() {
+      'use strict';
+
+      var input = function () {
+        var count = 0;
+        return {
+          add: function add(place) {
+            input.inc();
+
+            var element = document.createElement('input');
+            element.setAttribute('name', pattern.input.name);
+            element.setAttribute('type', pattern.input.type);
+            element.setAttribute('id', "" + pattern.input.id + input.value());
+            element.setAttribute('hidden', 'hidden');
+            element.setAttribute('multiple', 'multiple');
+            document.getElementById(place).appendChild(element);
+          },
+          inc: function inc() {
+            count++;
+          },
+          value: function value() {
+            return count;
+          },
+          getAll: function getAll() {
+            var objArray = [];
+            for (var i = 1; i <= input.value(); i++) {
+              var n = document.getElementById("" + pattern.input.id + i).files.length;
+              for (var j = 0; j <= n - 1; j++) {
+                objArray.push(document.getElementById("" + pattern.input.id + i).files[j]);
+              }
+            }
+            return objArray;
+          },
+          pattern: pattern
+
+        };
+      }();
+
+      var drop = function () {
+        var count = 0;
+        var dropObjects = [];
+
+        return {
+          add: function add(item) {
+            drop.inc();
+            dropObjects.push(item);
+          },
+          getAll: function getAll() {
+            return dropObjects;
+          },
+          inc: function inc() {
+            count++;
+          },
+          value: function value() {
+            return count;
+          }
+        };
+      }();
+
+      var test = function () {
+        var count = 0;
+        var dropObjects = [];
+
+        return {
+          add: function add(item) {
+            test.inc();
+            dropObjects.push(item);
+          },
+          getAll: function getAll() {
+            return dropObjects;
+          },
+          inc: function inc() {
+            count++;
+          },
+          value: function value() {
+            return count;
+          }
+        };
+      }();
+      var list = function () {
+
+        return {
+          add: function add(item, index, place) {
+            var element = document.createElement('li');
+            element.setAttribute('class', pattern.list.class);
+            element.setAttribute('id', "" + pattern.list.id + index);
+            document.getElementById(place).appendChild(element);
+
+            var elementDivFile = document.createElement('div');
+            elementDivFile.setAttribute('class', 'itemTextTrunc');
+            document.getElementById("" + pattern.list.id + index).appendChild(elementDivFile);
+
+            var elementSpanFile = document.createElement('span');
+            elementSpanFile.setAttribute('id', "_as-FileItem-Name-" + index);
+            elementDivFile.appendChild(elementSpanFile);
+            elementSpanFile.innerHTML = item.name;
+
+            var elementDivFileInfo = document.createElement('div');
+            elementDivFileInfo.setAttribute('class', '_asDiv-ItemInfo');
+            elementDivFile.appendChild(elementDivFileInfo);
+            elementDivFileInfo.innerHTML = "Size: " + superbytes(item.size) + " | Type: " + item.type;
+
+            var elementDivRemoveButton = document.createElement('div');
+            elementDivRemoveButton.setAttribute('class', 'itemRemoveButton');
+            element.appendChild(elementDivRemoveButton);
+
+            var elementIBtn = document.createElement('i');
+            elementIBtn.setAttribute('class', 'btn-act fa fa-times text-primary');
+            elementIBtn.setAttribute('id', "_asI-FileItem-Rem-" + index);
+            elementDivRemoveButton.appendChild(elementIBtn);
+          },
+          remove: function remove(id) {
+            var res = id.split('-');
+            var index = res[res.length - 1];
+            document.getElementById("" + pattern.list.id + index).setAttribute('style', 'display: none;');
+          }
+        };
+      }();
+
+      var progress = function () {
+        return {
+          show: function show() {
+            document.getElementById(pattern.progress.wrapperId).setAttribute('style', 'display: block;');
+          },
+          inc: function inc(value, loaded, total) {
+            document.getElementById(pattern.progress.barId).setAttribute('style', "width: " + value + "%");
+            document.getElementById(pattern.progress.barId).setAttribute('aria-valuenow', "" + value);
+            document.getElementById(pattern.progress.infoId).innerHTML = value + "% | " + superbytes(loaded) + "/" + superbytes(total);
+          }
+        };
+      }();
+
+      return {
+        input: input,
+        drop: drop,
+        list: list,
+        test: test,
+        progress: progress
+      };
+    };
+  }, { "./asupload-pattern.js": 2, "./superbytes.js": 6 }], 5: [function (require, module, exports) {
+
+    var as_proc = require('./asupload-proc.js');
+    var as_patt = require('./asupload-pattern.js');
+    var as_ui = require('./asupload-ui.js');
+
+    var proc = as_proc();
+    var pattern = as_patt();
+    var ui = as_ui();
+
+    (function () {
+      'use strict';
+
+      var idBtnAddFiles = '_asBtn-AddFiles';
+      var idBtnSendFiles = '_asBtn-SendFiles';
+      var idBtnSendFilesWrapper = '_asLi-SendFiles';
+      var idBtnRemFile = '_asI-FileItem-Rem-';
+
+      var idFrmInputs = '_asFrm-InputFiles';
+      var idUlListFiles = '_asUl-ListFiles';
+      var idSpanFileName = '_as-FileItem-Name-';
+
+      var elBtnAddFiles = document.getElementById(idBtnAddFiles);
+      var elBtnSendFiles = document.getElementById(idBtnSendFiles);
+
+      var dropData = new FormData();
+
+      document.addEventListener('DOMContentLoaded', function () {
+        elBtnAddFiles.addEventListener('click', function (e) {
+          addClick(e);
+        });
+
+        elBtnSendFiles.addEventListener('click', function (e) {
+          e.preventDefault();
+          ui.progress.show();
+
+          document.getElementById(idBtnSendFilesWrapper).setAttribute('style', 'display: none');
+          sendClick(e);
+        });
+
+        document.getElementById(pattern.dropzone.id).addEventListener('drop', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          addElementList(e.dataTransfer.files);
+          for (var i = 0; i <= e.dataTransfer.files.length; i++) {
+            dropData.append('userfile[]', e.dataTransfer.files[i]);
+          }
+
+          if (e.dataTransfer.files.length == 0) {
+            toggleDragArea('dropText');
+          } else {
+            toggleDragArea('dropText');
+          }
+        });
+
+        document.getElementById(pattern.dropzone.id).addEventListener('dragover', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+
+        document.getElementById(pattern.dropzone.id).addEventListener('dragleave', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+
+      var toggleDragArea = function toggleDragArea(elementId) {
+        if (proc.upload.files.getCount() == 0) {
+          document.getElementById(elementId).setAttribute('style', 'display: flex');
+        } else {
+          document.getElementById(elementId).setAttribute('style', 'display: none');
+        }
+      };
+
+      var addClick = function addClick(e) {
+        ui.input.add(idFrmInputs);
+
+        var currInput = "" + pattern.input.id + ui.input.value();
+        var element = document.getElementById(currInput);
+        element.click();
+
+        element.addEventListener('change', function (e) {
+          addElementList(e.target.files);
+          toggleDragArea('dropText');
+        });
+      };
+
+      var addElementList = function addElementList(filesObject) {
+        var files = filesObject;
+        for (var i = 0; i <= files.length - 1; i++) {
+          if (proc.upload.files.add(files[i])) {
+            proc.upload.files.inc();
+
+            var fileCourse = proc.upload.files.getCourse();
+            ui.list.add(files[i], fileCourse, idUlListFiles);
+
+            document.getElementById("" + idBtnRemFile + fileCourse).addEventListener('click', function (e) {
+
+              removeClick(e);
+              toggleDragArea('dropText');
+            });
+          }
+        }
+      };
+
+      var removeClick = function removeClick(e) {
+        var res = e.target.id.split('-');
+        var index = res[res.length - 1];
+
+        var elem = document.getElementById("" + idSpanFileName + index);
+        if (proc.upload.files.remove(elem.innerText)) {
+          ui.list.remove(e.target.id);
+        }
+      };
+
+      var sendClick = function sendClick(e) {
+        var ar = ui.input.getAll();
+        var c = ui.input.value();
+        var inputObjects = [];
+
+        for (var i = 1; i <= c; i++) {
+          inputObjects.push(document.getElementById("" + pattern.input.id + i));
+        }
+
+        proc.upload.send('server/upload.php', proc.upload.prepare(inputObjects, dropData.getAll('userfile[]')), function (xhr) {
+          xhr.upload.addEventListener('progress', function (e) {
+            if (e.lengthComputable) {
+              var percentComplete = e.loaded / e.total;
+              percentComplete = parseInt(percentComplete * 100);
+              ui.progress.inc(percentComplete, e.loaded, e.total);
+
+              if (percentComplete === 100) {}
+            }
+          }, false);
+
+          xhr.upload.addEventListener('loadstart', function (e) {}, false);
+        });
+      };
+    })();
+  }, { "./asupload-pattern.js": 2, "./asupload-proc.js": 3, "./asupload-ui.js": 4 }], 6: [function (require, module, exports) {
+
+    module.exports = superbytes = function superbytes(bytes, arg1, arg2) {
+      'use strict';
+
+      var UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      bytes = Math.abs(bytes);
+      var divider = void 0,
+          si = void 0,
+          digits = 0;
+
+      if (arg1 === undefined && arg2 === undefined) {
+        divider = 1024;
+        digits = 2;
+      }
+      if (typeof arg1 === 'boolean') {
+        if (arg1) {
+          divider = 1000;
+        } else {
+          divider = 1024;
+        }
+        if (typeof arg2 === 'number') {
+          digits = arg2;
+        } else {
+          digits = 2;
+        }
+      } else if (typeof arg1 === 'number') {
+        digits = arg1;
+        if (typeof arg2 === 'boolean') {
+          if (arg2) {
+            divider = 1000;
+          } else {
+            divider = 1024;
+          }
+        } else {
+          divider = 1024;
+        }
+      }
+
+      if (Number.isFinite(bytes)) {
+        if (bytes < divider) {
+          var num = bytes;
+          return num + " " + UNITS[0];
+        }
+
+        for (var i = 1; i <= 8; i++) {
+          if (bytes >= Math.pow(divider, i) && bytes < Math.pow(divider, i + 1)) {
+            var _num = (bytes / Math.pow(divider, i)).toFixed(digits);
+            return _num + " " + UNITS[i];
+          }
+        }
+      }
+    };
+  }, {}] }, {}, [5]);
