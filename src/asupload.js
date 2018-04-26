@@ -35,6 +35,8 @@ const ui = as_ui();
   let elBtnAddFiles = document.getElementById(idBtnAddFiles);
   let elBtnSendFiles = document.getElementById(idBtnSendFiles);
 
+  var dropData = new FormData();
+
   // Main container - document ready
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -54,55 +56,46 @@ const ui = as_ui();
 
     // DROP ZONE TESTS - PROTOTYPE
 
-    document.getElementById('scrollZone').addEventListener('drop', (e) => {
+    document.getElementById(pattern.dropzone.id).addEventListener('drop', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('File(s) dropped');
 
-      /*
-      if(e.dataTransfer.files) {
-        console.log('datatransfer files');
 
-        for (var i = 0; i < e.dataTransfer.files.length; i++) {
-          console.log('... file[' + i + '].name = ' + e.dataTransfer.files[i].name);
-        }
-        console.log(e.dataTransfer.files);
+      addElementList(e.dataTransfer.files);
+      for(let i = 0; i <= e.dataTransfer.files.length; i++) {
+        dropData.append('userfile[]', e.dataTransfer.files[i]);
       }
+      console.log(`DROP DATA LENGTH: ${dropData.getAll('userfile[]').length}`);
+      console.log('asdqweqweqwe');
+      console.log('----- FILE LIST EVENT DROP ----------');
+      console.log(proc.upload.files.list());
 
-      let files = e.dataTransfer.files;
-      for(let i = 0; i <= files.length-1; i++)
-        if(proc.upload.files.add (files[i])) {
-          proc.upload.files.inc();
-          toggleDragArea('dropText');
-          console.log(`Files count: ${proc.upload.files.getCount()}`);
-          let fileCourse = proc.upload.files.getCourse();
-          ui.list.add(files[i], i, idUlListFiles);
-
-          document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
-
-            removeClick(e);
-            toggleDragArea('dropText');
-          })
-        }
-        console.log(proc.upload.files);*/
-
+      if(e.dataTransfer.files.length == 0) {
+        toggleDragArea('dropText');
+      } else {
+        toggleDragArea('dropText');
+      }
     });
 
-    document.getElementById('scrollZone').addEventListener('dragover', (e) => {
+    document.getElementById('btnTest').addEventListener('click', (e) => {
+      console.log(proc.upload.files.list());
+    });
+
+    document.getElementById(pattern.dropzone.id).addEventListener('dragover', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("In Drop Zone");
+      //console.log("In Drop Zone");
 
     });
 
-    document.getElementById('scrollZone').addEventListener('dragleave', (e) => {
+    document.getElementById(pattern.dropzone.id).addEventListener('dragleave', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('Drag Leave');
+      //console.log('Drag Leave');
 
     });
 
-    // DROP ZONE END
+
   });
 
   let toggleDragArea = (elementId) => {
@@ -122,16 +115,17 @@ const ui = as_ui();
 
     // EVENT CHANGE INPUT FILES
     element.addEventListener('change', (e) => {
-      inputChange(e);
+      addElementList(e.target.files);
       toggleDragArea('dropText');
 
-      console.log('Get All:');
-      console.log(ui.input.getAll());
+      console.log('asdqweqweqwe');
+      console.log('----- FILE LIST EVENT CHANGE ----------');
+      console.log(proc.upload.files.list());
     });
   }
 
-  let inputChange = (e) => {
-    let files = e.target.files;
+  let addElementList = (filesObject) => {
+    let files = filesObject;
     for(let i = 0; i <= files.length-1; i++)
       if(proc.upload.files.add (files[i])) {
         proc.upload.files.inc();
@@ -155,25 +149,44 @@ const ui = as_ui();
     if(proc.upload.files.remove(elem.innerText)) {
       ui.list.remove (e.target.id);
     }
+
+    console.log('asdqweqweqwe');
+    console.log('----- FILE LIST EVENT CHANGE ----------');
+    console.log(proc.upload.files.list());
   }
 
   let sendClick = (e) => {
     let ar = ui.input.getAll();
     let c = ui.input.value();
-    let objInputs = [];
+    let dataObjects = [];
 
-    for(let i = 1; i <= c; i++)
-      objInputs.push(document.getElementById(`${pattern.input.id}${i}`));
+    for(let i = 1; i <= c; i++) {
+      // Input objects
+      dataObjects.push(document.getElementById(`${pattern.input.id}${i}`));
+    }
 
-      proc.upload.send('server/upload.php', proc.upload.prepare(objInputs), e => {
-        if (e.lengthComputable) {
-          let percentComplete = e.loaded / e.total;
-          percentComplete = parseInt(percentComplete * 100);
-          ui.progress.inc(percentComplete, e.loaded, e.total);
-          if (percentComplete === 100) {
+    console.log(ui.test.getAll());/*
+    proc.upload.send('server/upload.php', proc.upload.prepareInputs(dataObjects), e => {
+      if (e.lengthComputable) {
+        let percentComplete = e.loaded / e.total;
+        percentComplete = parseInt(percentComplete * 100);
+        ui.progress.inc(percentComplete, e.loaded, e.total);
+        if (percentComplete === 100) {
 
-          }
         }
-      });
+      }
+    });*/
+
+
+    proc.upload.send('server/upload.php', proc.upload.prepareDrop(dropData), e => {
+      if (e.lengthComputable) {
+        let percentComplete = e.loaded / e.total;
+        percentComplete = parseInt(percentComplete * 100);
+        ui.progress.inc(percentComplete, e.loaded, e.total);
+        if (percentComplete === 100) {
+
+        }
+      }
+    });
   }
 })();

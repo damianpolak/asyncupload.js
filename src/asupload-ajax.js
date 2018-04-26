@@ -38,6 +38,7 @@ module.exports = ajax = () => {
           if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
               // Action for success
               console.log('success');
+              console.log(xhr.response);
           }
       }
       xhr.send(data);

@@ -17,9 +17,7 @@ const pattern = as_patt();
 module.exports = ui = () => {
   'use strict';
   let input = (() => {
-
     let count = 0;
-
     return {
       add: (place) => {
         // increment quantity of inputs
@@ -56,15 +54,15 @@ module.exports = ui = () => {
 
   let drop = (() => {
     let count = 0;
-    return {
-      add: (place) => {
-        // increment quantity of inputs
-        drop.inc();
-        let element = document.createElement('div');
-          element.setAttribute('class', 'dropZone');
-          element.setAttribute('id', `_asDrop-FileItem-${drop.value()}`);
+    var dropObjects = [];
 
-        document.getElementById(place).appendChild(element);
+    return {
+      add: (item) => {
+        drop.inc();
+        dropObjects.push(item);
+      },
+      getAll: () => {
+        return dropObjects;
       },
       inc: () => {
         count++;
@@ -72,10 +70,29 @@ module.exports = ui = () => {
       value: () => {
         return count;
       }
-
     };
   })();
 
+  let test = (() => {
+    let count = 0;
+    var dropObjects = [];
+
+    return {
+      add: (item) => {
+        test.inc();
+        dropObjects.push(item);
+      },
+      getAll: () => {
+        return dropObjects;
+      },
+      inc: () => {
+        count++;
+      },
+      value: () => {
+        return count;
+      }
+    };
+  })();
   let list = (() => {
 
     return {
@@ -134,6 +151,7 @@ module.exports = ui = () => {
     input: input,
     drop: drop,
     list: list,
+    test: test,
     progress: progress
   };
 };

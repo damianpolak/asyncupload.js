@@ -10,19 +10,19 @@
  *
  */
 const a = require('./asupload-ajax.js');
-const ajax = a();
 
 module.exports = proc = () => {
   'use strict';
   let upload = (() => {
     let dataForTheServer = new FormData();
 
-    let prepare = (dataInputs) => {
-      let inpCount = dataInputs.length;
-      for(let i = 1; i <= inpCount; i++) {
-        let n = dataInputs[i-1].files.length;
+    let prepareInputs = (dataObjects) => {
+      let objectsCount = dataObjects.length;
+
+      for(let i = 1; i <= objectsCount; i++) {
+        let n = dataObjects[i-1].files.length;
         for(let j = 0; j <= n - 1; j++) {
-          let file = dataInputs[i-1].files[j];
+          let file = dataObjects[i-1].files[j];
           let d = dataForTheServer.getAll('userfile[]');
           if(!d.find(x => x.name === file.name)) {
             if(files.list().find(x => x.name === file.name))
@@ -30,11 +30,18 @@ module.exports = proc = () => {
           }
         }
       }
+
       dataForTheServer.append('approvedFiles', JSON.stringify(files.list()));
       return dataForTheServer;
     }
 
+    let prepareDrop = (dropData) => {
+      dropData.append('approvedFiles', JSON.stringify(files.list()));
+      return dropData
+    }
+
     let send = (ajaxUrl, ajaxData, progress) => {
+      const ajax = a();
       ajax.send(ajaxUrl, ajaxData, progress);
     }
 
@@ -95,7 +102,8 @@ module.exports = proc = () => {
       getData: () => {
         return dataForTheServer;
       },
-      prepare: prepare
+      prepareInputs: prepareInputs,
+      prepareDrop: prepareDrop
     }
   })();
 
