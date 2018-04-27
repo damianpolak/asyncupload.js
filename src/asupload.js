@@ -48,10 +48,20 @@ const ui = as_ui();
     // Click event send files
     elBtnSendFiles.addEventListener('click', (e) => {
       e.preventDefault();
-      ui.progress.show();
-      // Hide Send Button
-      document.getElementById(idBtnSendFilesWrapper).setAttribute('style', 'display: none');
-      sendClick(e);
+
+      // Button send is notactive when no files selected
+      if(proc.upload.files.getCount() > 0) {
+        // Hide ScrollZone when uploading
+        document.getElementById('scrollZone').setAttribute('style', 'display: none;');
+        document.getElementById('headTextBegin').setAttribute('style', 'display: none;');
+        document.getElementById('headTextProcess').setAttribute('style', 'display: block;');
+        document.getElementById('headTextProcess').innerHTML = 'Uploading...<br>It may take a while';
+        ui.progress.show();
+        // Hide Send Button
+        document.getElementById(idBtnSendFilesWrapper).setAttribute('style', 'display: none');
+        sendClick(e);
+      }
+
     });
 
     // DROP ZONE TESTS - PROTOTYPE
@@ -123,13 +133,13 @@ const ui = as_ui();
 
         document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
 
-          removeClick(e);
+          removeElementList(e);
           toggleDragArea('dropText');
         })
       }
   }
 
-  let removeClick = (e) => {
+  let removeElementList = (e) => {
     let res = e.target.id.split('-');
     let index = res[res.length-1];
 
@@ -157,11 +167,22 @@ const ui = as_ui();
           percentComplete = parseInt(percentComplete * 100);
           ui.progress.inc(percentComplete, e.loaded, e.total);
 
-          if (percentComplete === 100) {
-
+          if(percentComplete === 100) {
+            document.getElementById('headTextProcess').innerHTML = 'Preparing files...<br>Everything is almost done... ';
           }
         }
       }, false);
+
+      xhr.onreadystatechange = function() {
+          if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+              // Action for success
+              console.log('success');
+              console.log(xhr.response);
+
+              // Show message in header when all files
+              document.getElementById('headTextProcess').innerHTML = 'Successul!<br>All files were uploaded! ';
+          }
+      };
 
       xhr.upload.addEventListener('loadstart', e => {
 
