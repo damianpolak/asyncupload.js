@@ -61,7 +61,7 @@ module.exports = superbytes = (bytes, arg1, arg2) => {
      for(let i = 1; i <= 8; i++) {
        if(bytes >= Math.pow(divider, i) && bytes < Math.pow(divider, i+1)) {
          let num = (bytes/Math.pow(divider, i)).toFixed(digits);
-         return `${num} ${UNITS[i]}`;
+         return `${num}${UNITS[i]}`;
        }
      }
    }
