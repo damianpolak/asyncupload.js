@@ -48,6 +48,7 @@ html, body {
 .scrollbar {
     margin: 0;
     overflow-y: scroll;
+    border-radius: 0px !important;
 }
 
 #_asBtn-AddFiles:hover {
