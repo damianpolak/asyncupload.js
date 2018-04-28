@@ -123,6 +123,11 @@ const ui = as_ui();
   }
 
   let addElementList = (filesObject) => {
+
+    if(proc.upload.files.getCount() === 0) {
+      document.getElementById('filesInfo').setAttribute('style', 'display: block;');
+    }
+
     let files = filesObject;
     for(let i = 0; i <= files.length-1; i++)
       if(proc.upload.files.add (files[i])) {
@@ -137,9 +142,14 @@ const ui = as_ui();
           toggleDragArea('dropText');
         })
       }
+
+    document.getElementById('filesCountInfo').innerHTML = proc.upload.files.getCount() + '/20';
+    document.getElementById('filesSizeInfo').innerHTML = `${superbytes(proc.upload.files.getSize())}/20GB`;
+
   }
 
   let removeElementList = (e) => {
+
     let res = e.target.id.split('-');
     let index = res[res.length-1];
 
@@ -147,6 +157,13 @@ const ui = as_ui();
     if(proc.upload.files.remove(elem.innerText)) {
       ui.list.remove (e.target.id);
     }
+
+    if(proc.upload.files.getCount() === 0) {
+      document.getElementById('filesInfo').setAttribute('style', 'display: none;');
+    }
+
+    document.getElementById('filesCountInfo').innerHTML = `${proc.upload.files.getCount()}/20`
+    document.getElementById('filesSizeInfo').innerHTML = `${superbytes(proc.upload.files.getSize())}/20GB`;
   }
 
   let sendClick = (e) => {

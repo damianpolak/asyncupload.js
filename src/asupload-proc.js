@@ -107,6 +107,14 @@ module.exports = proc = () => {
         },
         getCourse: () => {
           return course;
+        },
+        getSize: () => {
+          let size = 0;
+          for(let i = 0; i <= approved.length - 1; i++) {
+            size += approved[i].size;
+          }
+
+          return size;
         }
       };
     })();
