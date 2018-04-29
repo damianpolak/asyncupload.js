@@ -8,10 +8,10 @@ Asyncupload.js is a simple widget, provides asynchronous multiple file upload wi
 - asynchronous multiple file upload
 - adding and deleting files before upload
 - progress bar
+- drag & drop support
 
 ## In progress
-- drag & drop support
-- extensions validation
+- extension validation
 
 ## License
 
