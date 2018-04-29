@@ -124,8 +124,10 @@ const ui = as_ui();
 
   let addElementList = (filesObject) => {
 
+    // Show info bar and enable send button
     if(proc.upload.files.getCount() === 0) {
       document.getElementById('filesInfo').setAttribute('style', 'display: block;');
+      elBtnSendFiles.disabled = false;
     }
 
     let files = filesObject;
@@ -158,8 +160,10 @@ const ui = as_ui();
       ui.list.remove (e.target.id);
     }
 
+    // Hide info bar and disable send button
     if(proc.upload.files.getCount() === 0) {
       document.getElementById('filesInfo').setAttribute('style', 'display: none;');
+      elBtnSendFiles.disabled = true;
     }
 
     document.getElementById('filesCountInfo').innerHTML = `${proc.upload.files.getCount()}/20`
