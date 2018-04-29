@@ -189,6 +189,14 @@ module.exports = proc = () => {
         },
         getCourse: () => {
           return course;
+        },
+        getSize: () => {
+          let size = 0;
+          for(let i = 0; i <= approved.length - 1; i++) {
+            size += approved[i].size;
+          }
+
+          return size;
         }
       };
     })();
@@ -493,6 +501,13 @@ const ui = as_ui();
   }
 
   let addElementList = (filesObject) => {
+
+    // Show info bar and enable send button
+    if(proc.upload.files.getCount() === 0) {
+      document.getElementById('filesInfo').setAttribute('style', 'display: block;');
+      elBtnSendFiles.disabled = false;
+    }
+
     let files = filesObject;
     for(let i = 0; i <= files.length-1; i++)
       if(proc.upload.files.add (files[i])) {
@@ -507,9 +522,14 @@ const ui = as_ui();
           toggleDragArea('dropText');
         })
       }
+
+    document.getElementById('filesCountInfo').innerHTML = proc.upload.files.getCount() + '/20';
+    document.getElementById('filesSizeInfo').innerHTML = `${superbytes(proc.upload.files.getSize())}/20GB`;
+
   }
 
   let removeElementList = (e) => {
+
     let res = e.target.id.split('-');
     let index = res[res.length-1];
 
@@ -517,6 +537,15 @@ const ui = as_ui();
     if(proc.upload.files.remove(elem.innerText)) {
       ui.list.remove (e.target.id);
     }
+
+    // Hide info bar and disable send button
+    if(proc.upload.files.getCount() === 0) {
+      document.getElementById('filesInfo').setAttribute('style', 'display: none;');
+      elBtnSendFiles.disabled = true;
+    }
+
+    document.getElementById('filesCountInfo').innerHTML = `${proc.upload.files.getCount()}/20`
+    document.getElementById('filesSizeInfo').innerHTML = `${superbytes(proc.upload.files.getSize())}/20GB`;
   }
 
   let sendClick = (e) => {
@@ -626,7 +655,7 @@ module.exports = superbytes = (bytes, arg1, arg2) => {
      for(let i = 1; i <= 8; i++) {
        if(bytes >= Math.pow(divider, i) && bytes < Math.pow(divider, i+1)) {
          let num = (bytes/Math.pow(divider, i)).toFixed(digits);
-         return `${num} ${UNITS[i]}`;
+         return `${num}${UNITS[i]}`;
        }
      }
    }
