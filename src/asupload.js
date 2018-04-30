@@ -70,7 +70,6 @@ const ui = as_ui();
       e.preventDefault();
       e.stopPropagation();
 
-
       addElementList(e.dataTransfer.files);
       for(let i = 0; i <= e.dataTransfer.files.length; i++) {
         dropData.append('userfile[]', e.dataTransfer.files[i]);
@@ -86,15 +85,11 @@ const ui = as_ui();
     document.getElementById(pattern.dropzone.id).addEventListener('dragover', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      //console.log("In Drop Zone");
-
     });
 
     document.getElementById(pattern.dropzone.id).addEventListener('dragleave', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      //console.log('Drag Leave');
-
     });
 
   });
@@ -123,7 +118,6 @@ const ui = as_ui();
   }
 
   let addElementList = (filesObject) => {
-
     // Show info bar and enable send button
     if(proc.upload.files.getCount() === 0) {
       document.getElementById('filesInfo').setAttribute('style', 'display: block;');
@@ -137,17 +131,14 @@ const ui = as_ui();
 
         let fileCourse = proc.upload.files.getCourse();
         ui.list.add(files[i], fileCourse, idUlListFiles);
-
         document.getElementById(`${idBtnRemFile}${fileCourse}`).addEventListener('click', (e) => {
 
           removeElementList(e);
           toggleDragArea('dropText');
         })
       }
-
     document.getElementById('filesCountInfo').innerHTML = proc.upload.files.getCount() + '/20';
     document.getElementById('filesSizeInfo').innerHTML = `${superbytes(proc.upload.files.getSize())}/20GB`;
-
   }
 
   let removeElementList = (e) => {
@@ -156,7 +147,8 @@ const ui = as_ui();
     let index = res[res.length-1];
 
     let elem = document.getElementById(`${idSpanFileName}${index}`);
-    if(proc.upload.files.remove(elem.innerText)) {
+
+    if(proc.upload.files.remove(elem.textContent)) {
       ui.list.remove (e.target.id);
     }
 
