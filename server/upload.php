@@ -26,10 +26,12 @@ if(isset($_FILES)) {
   foreach ($_FILES['userfile']['error'] as $key => $error) {
     if ($error == UPLOAD_ERR_OK) {
       $tmpName = $_FILES['userfile']['tmp_name'][$key];
-      $name = $uploadDir . basename($_FILES['userfile']['name'][$key]);
+      $fileName = basename($_FILES['userfile']['name'][$key]);
+      $path = $uploadDir . $fileName;
+
       foreach($approvedFiles as $key => $object) {
-        if(strpos($name, $object->name))
-          move_uploaded_file($tmpName, $name);
+        if(strpos($path, $object->name))
+          move_uploaded_file($tmpName, $path);
       }
     }
   }
